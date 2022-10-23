@@ -27,7 +27,7 @@ export default function HomePage() {
             {query.mssv.toLowerCase() === GIAM_THI ? (
               <Button open={showModal} />
             ) : null}
-            <Card info={query}></Card>
+            <Card info={query.mssv}></Card>
           </div>
         </div>
       </div>

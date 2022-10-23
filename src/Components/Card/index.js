@@ -1,7 +1,5 @@
-import { prettyDOM } from "@testing-library/react";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 import { TEXT_TEXTAREA } from "../../Constants";
 
@@ -9,7 +7,7 @@ import HeaderBox from "../Header";
 import Message from "../Messages";
 import TextArea from "../TextBox";
 
-export default function Card() {
+export default function Card({ info }) {
   const [page, setPage] = useState(1);
   const [listMessage, setListMessage] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +73,9 @@ export default function Card() {
       {isLoading ? <span>Loading...</span> : null}
       <div className="card-body" onScroll={() => onScroll()} ref={listInnerRef}>
         {listMessage.map((element) => {
-          return <Message key={element.id} message={element}></Message>;
+          return (
+            <Message key={element.id} message={element} user={info}></Message>
+          );
         })}
         <div ref={bottom}></div>
         <TextArea label={TEXT_TEXTAREA} />

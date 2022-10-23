@@ -1,5 +1,6 @@
 import { RESPONSE_MESSAGE } from "../constants.js";
 import { ChatThiOnline } from "../model/ChatThiOnline.js";
+import { Information } from "../model/Information.js";
 
 export const createChat = async (req, res) => {
   try {
@@ -23,6 +24,7 @@ export const createChat = async (req, res) => {
 
 export const getChatOfBox = async (req, res) => {
   return await ChatThiOnline.find({ box: Number(req.params.box) })
+    .populate({ path: "info", model: Information })
     .then((data) =>
       res.status(200).json({ status: RESPONSE_MESSAGE.SUCCESS, message: data })
     )

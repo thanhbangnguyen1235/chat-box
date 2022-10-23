@@ -21,7 +21,6 @@ const schema = mongoose.Schema(
       type: String,
       ref: DATABASE_TABLE.INFORMATION,
       trim: true,
-      require: true,
     },
     noidung: {
       type: String,

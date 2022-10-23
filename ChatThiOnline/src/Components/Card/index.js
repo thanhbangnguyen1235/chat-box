@@ -76,7 +76,13 @@ export default function Card(props) {
       {isLoading ? <span>Loading...</span> : null}
       <div className="card-body" onScroll={() => onScroll()} ref={listInnerRef}>
         {listMessage.map((element) => {
-          return <Message key={element.uid} message={element}></Message>;
+          return (
+            <Message
+              key={element.uid}
+              message={element}
+              mssv={props.params.mssv}
+            />
+          );
         })}
         <div ref={bottom}></div>
         <TextArea label={TEXT_TEXTAREA} />

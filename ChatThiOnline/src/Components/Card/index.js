@@ -1,4 +1,4 @@
-import { prettyDOM } from "@testing-library/react";
+import socketClient from "socket.io-client";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -18,11 +18,9 @@ export default function Card(props) {
 
     // my api just has 4 pages 1->4
     if (page < 5) {
-      console.log("vo");
       axios
-        .get(`http://localhost:5000/${props.params.boxNumber}`)
+        .get(`http://localhost:5000/${props.params.boxNumber}?page=${page}`)
         .then((data) => {
-          console.log(data);
           if (!isActive) {
             //if in the fisrt load message
             if (page == 1) {
@@ -68,7 +66,21 @@ export default function Card(props) {
     }
   }, [listMessage]);
 
-  console.log(listMessage);
+  const socket = socketClient(`http://localhost:5000/`, {
+    transports: ["websocket", "polling", "flashsocket"],
+  });
+
+  socket.on("get-new-message", async (message) => {
+    let data = await message;
+    if (
+      Number(props.params.boxNumber) === Number(message.box) &&
+      listMessage.findIndex((item) => item.uid !== message.uid) === -1
+    ) {
+      const temp = listMessage;
+      temp.push(data);
+      setListMessage(temp);
+    }
+  });
 
   return (
     <div className="card" id="chat1">
@@ -81,11 +93,17 @@ export default function Card(props) {
               key={element.uid}
               message={element}
               mssv={props.params.mssv}
+              box={props.params.boxNumber}
             />
           );
         })}
         <div ref={bottom}></div>
-        <TextArea label={TEXT_TEXTAREA} />
+        <TextArea
+          label={TEXT_TEXTAREA}
+          mssv={props.params.mssv}
+          box={props.params.boxNumber}
+          socket={socket}
+        />
       </div>
     </div>
   );

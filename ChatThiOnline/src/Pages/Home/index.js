@@ -16,7 +16,6 @@ export default function HomePage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const showModal = () => {
-    console.log(12121);
     setIsOpen((pre) => !pre);
   };
   return (

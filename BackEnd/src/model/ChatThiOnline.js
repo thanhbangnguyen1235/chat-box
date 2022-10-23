@@ -18,9 +18,8 @@ const schema = mongoose.Schema(
       require: true,
     },
     nguoidung: {
-      type: String,
+      type: Number,
       ref: DATABASE_TABLE.INFORMATION,
-      trim: true,
     },
     noidung: {
       type: String,

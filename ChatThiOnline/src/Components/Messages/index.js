@@ -6,9 +6,9 @@ export default function Message({ message }) {
   return (
     <>
       {message.isOwner ? (
-        <OwnerMessage message={message}></OwnerMessage>
+        <OwnerMessage message={message} />
       ) : (
-        <UserMessage message={message}></UserMessage>
+        <UserMessage message={message} />
       )}
     </>
   );

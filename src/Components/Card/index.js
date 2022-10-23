@@ -1,4 +1,7 @@
+import { prettyDOM } from "@testing-library/react";
+import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import { TEXT_TEXTAREA } from "../../Constants";
 
@@ -7,103 +10,71 @@ import Message from "../Messages";
 import TextArea from "../TextBox";
 
 export default function Card() {
-  var listMessage = [
-    {
-      id: 1,
-      content: "Nguyen thanh bang",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: true,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 2,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: true,
-      isText: true,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 3,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: true,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 4,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: false,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 5,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: false,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 6,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: false,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 7,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: false,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-    {
-      id: 8,
-      content: "sdfsdfs",
-      avatar:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp",
-      isOwner: false,
-      isText: false,
-      video:
-        "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp",
-    },
-  ];
+  const [page, setPage] = useState(1);
+  const [listMessage, setListMessage] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isActive = false;
+
+    // my api just has 4 pages 1->4
+    if (page < 5) {
+      axios
+        .get(
+          `https://my-json-server.typicode.com/thanhbangnguyen1235/chat-server/p${page}`
+        )
+        .then((data) => {
+          if (!isActive) {
+            //if in the fisrt load message
+            if (page == 1) {
+              setListMessage(data.data);
+            }
+            // if not so add the list messages into list
+            else {
+              data.data.map((element) => {
+                setListMessage((listMessage) => [element, ...listMessage]);
+              });
+            }
+          }
+        });
+    }
+    return () => {
+      isActive = true;
+    };
+  }, [page]);
+
+  const listInnerRef = useRef();
+  const onScroll = () => {
+    if (listInnerRef.current) {
+      const { scrollTop } = listInnerRef.current;
+      if (scrollTop === 0) {
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+        setPage((page) => page + 1);
+      }
+    }
+  };
 
   const bottom = useRef(null);
-  const scrollToBottom = () => {
+  const scrollToBottomBox = () => {
     bottom.current.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    const { scrollTop } = listInnerRef.current;
+    if (scrollTop == 0) {
+      scrollToBottomBox();
+    }
   }, [listMessage]);
 
   return (
     <div className="card" id="chat1">
       <HeaderBox />
-      <div className="card-body">
-        {listMessage.slice(0, 5).map((element) => {
+      {isLoading ? <span>Loading...</span> : null}
+      <div className="card-body" onScroll={() => onScroll()} ref={listInnerRef}>
+        {listMessage.map((element) => {
           return <Message key={element.id} message={element}></Message>;
         })}
         <div ref={bottom}></div>

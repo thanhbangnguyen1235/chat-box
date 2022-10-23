@@ -14,12 +14,19 @@ export default function HomePage() {
     boxNumber: new URLSearchParams(queryParams).get("box"),
   });
 
+  const [isOpen, setIsOpen] = useState(false);
+  const showModal = () => {
+    console.log(12121);
+    setIsOpen((pre) => !pre);
+  };
   return (
     <section id="main">
       <div className="container py-5">
         <div className="row d-flex justify-content-center">
           <div className="col-md-8 col-lg-6 col-xl-4">
-            {query.mssv.toLowerCase() == GIAM_THI ? <Button /> : null}
+            {query.mssv.toLowerCase() === GIAM_THI ? (
+              <Button open={showModal} />
+            ) : null}
             <Card info={query}></Card>
           </div>
         </div>

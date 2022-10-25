@@ -5,7 +5,7 @@ import Card from "../../Components/Card";
 import Button from "../../Components/Button";
 import axios from "axios";
 
-import { GIAM_THI } from "../../Constants";
+import { GIAM_THI, DOMAIN_BACKEND } from "../../Constants";
 
 export default function HomePage() {
   const queryParams = useLocation().search;
@@ -15,21 +15,21 @@ export default function HomePage() {
   });
   const [listMessage, setListMessage] = useState([]);
   const [page, setPage] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
 
+  // get list messages, effect if page is changed
   useEffect(() => {
     let isActive = false;
-
     // my api just has 4 pages 1->4
     if (page < 5) {
       axios
-        .get(`http://localhost:5000/${query.boxNumber}?page=${page}`)
+        .get(DOMAIN_BACKEND + `${query.boxNumber}?page=${page}`)
         .then((data) => {
           if (!isActive) {
             //if in the fisrt load message
             if (page == 1) {
               setListMessage(data.data.message);
             }
-
             // if not so add the list messages into list
             else {
               data.data.message.map((element) => {
@@ -44,7 +44,7 @@ export default function HomePage() {
     };
   }, [page]);
 
-  const [isOpen, setIsOpen] = useState(false);
+  // open or off modal
   const showModal = () => {
     setIsOpen((pre) => !pre);
   };

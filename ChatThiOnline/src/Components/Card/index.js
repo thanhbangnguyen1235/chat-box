@@ -1,19 +1,17 @@
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-
-import { TEXT_TEXTAREA } from "../../Constants";
 
 import HeaderBox from "../Header";
 import Message from "../Messages";
 import TextArea from "../TextBox";
 import { socket } from "../../utils/socket-util";
-import { DOMAIN_BACKEND } from "../../Constants/index";
+import { DOMAIN_BACKEND, TEXT_TEXTAREA } from "../../Constants";
 
 export default function Card(props) {
   const [message, setMessage] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
   const listInnerRef = useRef();
+
+  // load more message if scroll to top
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop } = listInnerRef.current;
@@ -28,10 +26,13 @@ export default function Card(props) {
   };
 
   const bottom = useRef(null);
+
+  // scroll to bottom
   const scrollToBottomBox = () => {
     bottom.current.scrollIntoView({ behavior: "smooth" });
   };
 
+  // auto scroll to bottom if list message is changed
   useEffect(() => {
     const { scrollTop } = listInnerRef.current;
     if (scrollTop == 0) {
@@ -42,6 +43,7 @@ export default function Card(props) {
   const socketClient = socket.initial(DOMAIN_BACKEND);
   socket.listen(socketClient, setMessage, Number(props.params.boxNumber));
 
+  // inital list message
   useEffect(() => {
     if (message) {
       const temp = props.listMessage;

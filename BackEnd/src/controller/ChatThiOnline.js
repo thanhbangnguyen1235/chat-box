@@ -41,3 +41,43 @@ export const getChatOfBox = async (req, res) => {
         .json({ status: RESPONSE_MESSAGE.ERROR, message: err.message })
     );
 };
+
+export const getChats = async (box, page) => {
+  const date = new Date(Date.now());
+  console.log("vo", date.getYear(), date.getMonth() + 1, date.getDate());
+  return await ChatThiOnline.find({
+    box: Number(box),
+    time: {
+      $gte: new Date(
+        date.getYear(),
+        date.getMonth() + 1,
+        date.getDate(),
+        0,
+        0,
+        0
+      ),
+    },
+  })
+    .sort({ uid: -1 })
+    // .skip(PAGINATION * page - PAGINATION)
+    // .limit(PAGINATION)
+    .populate({ path: "info", model: Information });
+};
+
+export const addChat = async (message) => {
+  try {
+    const newChat = new ChatThiOnline({
+      nguoidung: Number(message.nguoidung),
+      noidung: message.noidung,
+      box: Number(message.box),
+      time: new Date(new Date().toString()),
+    });
+
+    return await newChat.save().then(async (data) => {
+      const info = await Information.findOne({ uid: data.nguoidung });
+      return { data: await data._doc, info };
+    });
+  } catch (err) {
+    return undefined;
+  }
+};

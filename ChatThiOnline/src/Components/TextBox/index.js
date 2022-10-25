@@ -1,11 +1,13 @@
 import axios from "axios";
 import React from "react";
+import { DOMAIN_BACKEND } from "../../Constants";
 
 export default function TextArea(props) {
+  // function send message if press button 'Enter'
   function sendMessage(event) {
     if (event.key === "Enter") {
       axios
-        .post(`http://localhost:5000/`, {
+        .post(DOMAIN_BACKEND, {
           noidung: event.target.value,
           nguoidung: props.mssv,
           box: props.box,
